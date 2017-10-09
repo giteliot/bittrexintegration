@@ -1,14 +1,19 @@
 import React from 'react';
 
 class TextBlock extends React.Component {
+	constructor() {
+		super();
+	}
 	render() {
-		var style = {
+		const style = {
 			padding: "1em",
-	    };
+		}
+
+		const txt = this.props.txt;
 
 		return (
 				<div style={style}>
-				 <span>20%</span>
+				 <span>{txt}</span>
 				</div>
 			);
 

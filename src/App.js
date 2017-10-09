@@ -1,18 +1,13 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import TextField from './components/TextField';
-import TextBlock from './components/TextBlock';
+import Body from './components/Body';
 
 class App extends Component {
   render() {
     return (
       <div>
-       <div className="App-intro">
-       Welcome to the Money Maker
-       </div>
-       <TextField/>
-       <TextBlock/>
+       <Body/>
       </div>
     );
   }
