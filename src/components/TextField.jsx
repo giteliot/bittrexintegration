@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 class TextField extends React.Component {
 	constructor() {
@@ -11,8 +11,9 @@ class TextField extends React.Component {
 	}
 
 	handleKeyPress = (event) => {
-		 if(event.key == 'Enter'){
-		   this.props.parentKeyPress(this.state.value)
+		 if(event.key === 'Enter'){
+		 	this.setState({value : ''});
+			this.props.parentKeyPress(this.state.value)
 		 }
 		}
 
