@@ -25,17 +25,34 @@ class Body extends React.Component {
 	}
 
 	render() {
+		var xbtn = {
+			height: "24px",
+			width: "24px",
+		}
+
+		const float = {
+			float: "left",
+		};
+
 		return (
 				<div>
 				 <div className="App-intro">
 			      Welcome to the Money Maker
 			      </div>
 				 <TextField parentKeyPress={this.addPair.bind(this)}/>
-	       		 <ul>
-          		  {this.state.pairs.map(function(pair){
-            	   return <li key={pair}><img onClick = {this.removePair.bind(this,pair)} src={require('../cancel-button.png')} height="24" width = "24" alt="X"/><PercentageRow pair = {pair}/></li>;
+	       	 {/*<ul>
+          		  {this.state.pairs.map(function(pair,i){
+            	   return <li key={i}>
+            	   		   <div style={float}>
+		            	   <img onClick = {this.removePair.bind(this,pair)} src={require('../cancel-button.png')} style={xbtn} alt="X"/>
+		            	   <PercentageRow pair = {pair}/>
+		            	   </div>
+		            	  </li>;
           		  }, this)}
-        		 </ul>
+        		 </ul>*/}
+        		 <div style={float}>
+        		 <PercentageRow pair = "BTC-ETH"/>
+        		 </div>
 	       		</div>
 			);
 
