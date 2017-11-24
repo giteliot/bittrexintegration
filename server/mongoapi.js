@@ -2,33 +2,81 @@
 
 const MongoClient = require('mongodb');
 const bittrexapi = require('./bittrexapi');
+const config = require('./config');
 
 const mongoapi = {};
-// DB Connection URL
-const url = 'mongodb://localhost:27017/brexdb';
 
-//return the list of all available pairs [{"pair":"BTC-ETH"},...]
-mongoapi.findPairs = function(callback) {
-	MongoClient.connect(url, function(err, db) {
+const response = {"code":500,
+					"message":"Generic Error"};
 
-	  const collection = db.collection('currencies');
 
-	  collection.find({},{"_id": 0, "pair":1}).toArray(function(err, docs) {
-	  	const out = [];
-	  	//docs.forEach( (val, key) => out.push(val.pair) );  	
-	    callback(docs);
-	    db.close();
-	  });
+//insert spike to an existing pair
+mongoapi.insertSpike = function(pair, perc, value, callback) {
+
+	MongoClient.connect(config.db.url, function(err, db) {
+
+		const collection = db.collection('pairs');
+
+		collection.findOne({"pair":pair})
+		.then(function(doc) {
+			if (!doc) {
+				callback(response);
+				db.close();
+				return;
+			} else {
+
+				const spike = {};
+				spike.date = new Date();
+				spike.perc = perc;
+				spike.value = value;
+
+				doc.spikes.unshift(spike);
+
+				collection.updateOne({"pair":pair},doc)
+				.then(function(r) {
+					if (r.modifiedCount > 0) {
+						callback({"code":200,
+						"message":"Pair sucessfully updated"});					
+					} else {
+						callback(response);
+
+					}
+					db.close();
+
+				});
+
+			}
+		});
 
 	});
 }
 
+
+//clean spikes for all markets in current loop
+mongoapi.cleanSpikes = function() {
+
+	MongoClient.connect(config.db.url, function(err, db) {
+		const collection = db.collection('pairs');
+
+		collection.updateMany({}, { "$set": { "spikes": [] } }, function(err, resp) {
+
+			if (err)
+				console.log(err);
+			else {
+				const UpLoop = require('./uploop');
+				UpLoop.addSpike();
+			}
+			db.close();
+
+		});
+
+	});		
+}
+
 //insert a new watch pair (returns 0 (OK) 1 (existing) -1 (error))
 mongoapi.insertPair = function(pair, callback) {
-	var response = {"code":500,
-					"message":"Generic Error"};
 
-	MongoClient.connect(url, function(err, db) {
+	MongoClient.connect(config.db.url, function(err, db) {
 
 		const collection = db.collection('pairs');
 		//cerca se pair esiste già fra le currencies
@@ -71,22 +119,42 @@ mongoapi.insertPair = function(pair, callback) {
 
 				}
 			});
-
 			
 	  });
 
 	});
 }
 
-const stubInitPair = {
-	"pair":"STUB",
-	"spikes": [
-		{
-			"date":"yyyymmdd hh:mm:ss",
-			"perc":"+20%",
-			"value":0.025
-		}
-	]
-};
+//return the list of all available pairs [{"pair":"BTC-ETH"},...]
+mongoapi.findPairs = function(callback) {
+	MongoClient.connect(config.db.url, function(err, db) {
+
+	  const collection = db.collection('pairs');
+
+	  collection.find({},{"_id": 0, "pair":1, "spikes": 1}).toArray(function(err, docs) {
+
+	    callback(docs);
+	    db.close();
+
+	  });
+
+	});
+}
+
+//delete all pairs
+mongoapi.deletePairs = function(callback) {
+	MongoClient.connect(config.db.url, function(err, db) {
+
+	  const collection = db.collection('pairs');
+
+	  collection.deleteMany()
+	  .then(function(r) {
+	  	callback({"code":200,
+							"message":"Deleted "+r.deletedCount+" pairs"});
+	  	db.close();
+	  });
+
+	});
+}
 
 module.exports = mongoapi;

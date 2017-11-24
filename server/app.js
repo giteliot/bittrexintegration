@@ -1,6 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
+const UpLoop = require('./uploop');
+const config = require('./config');
+
 
 const app = express();
 
@@ -14,5 +17,8 @@ app.use(express.static(path.resolve(__dirname, '..', 'build')));
 app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'build', 'index.html'));
 });
+
+//starting the update loop with SPIKE% spike size and LOOP_INTERVAL seconds interval time
+UpLoop.start(config.SPIKE,config.LOOP_INTERVAL);
 
 module.exports = app;
