@@ -5,6 +5,9 @@ const fs = require('fs');
 
 const analyzer = {};
 
+const response = {"code":500,
+					"message":"Generic Error"};
+
 //get all spikes and write them in a .csv file
 analyzer.writeSpikesCsv = function(callback) {
 
@@ -23,6 +26,68 @@ analyzer.writeSpikesCsv = function(callback) {
 	    callback({"code":200,
 						"message":"Created file marketSpikes.csv"});
 	});
+}
+
+analyzer.getAllData = function(callback) {
+
+	mongoapi.findPairs(function(docs){
+		//console.log(docs);
+
+		if (!docs || docs.length < 1) {
+			callback(response);
+			return;
+		}
+
+		docs.code = 200;
+
+		docs.forEach( function(doc) {
+			doc.analysis = analyzer.getMarketAnalysis(doc);
+		});
+
+		callback(docs);
+
+	});
+}
+
+
+analyzer.getPairData = function(pair, callback) {
+	mongoapi.findPair(pair, function(market){
+		if (!market || !market.spikes)
+			callback(response);
+		else {
+			market.analysis = analyzer.getMarketAnalysis(market);
+			market.code = 200;
+			callback(market);
+		}
+	});
+}
+
+
+analyzer.getMarketAnalysis = function(market) {
+
+	const spikes = market.spikes;
+
+	let good = 0;
+	let bad = 0;
+	let rank = 0;
+
+	for (let k = 0; k < spikes.length - 1; k++) {
+		let prev = spikes[k].perc;
+		if (prev > 0) continue;
+		let current = spikes[k+1].perc;
+		if (current > 0) 
+			good++;
+		else 
+			bad++;
+	}
+
+	const analysis = {};
+	analysis.rank = good-bad;
+	analysis.upswing = good;
+	analysis.downswing = bad;
+	analysis.totalSpikes = spikes.length;
+
+	return analysis;
 }
 
 module.exports = analyzer;

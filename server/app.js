@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
 });
 
 //starting the update loop with SPIKE% spike size and LOOP_INTERVAL seconds interval time
-UpLoop.start(config.SPIKE,config.LOOP_INTERVAL);
+//UpLoop.update(config.SPIKE);
+UpLoop.start();
 
 module.exports = app;

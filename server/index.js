@@ -3,16 +3,27 @@
 const app = require('./app');
 const mongoapi = require('./mongoapi');
 const analyzer = require('./analyzer');
+const trader = require('./trader');
 const request = require('request');
 const PORT = process.env.PORT || 9000;
+
+
+
+// PAIR API'S
+
+//get all active pairs
+app.post('/api/v1/pairs/addall/:currency' , function(req, res){
+	 
+	  mongoapi.insertAllPairs(req.params.currency);
+	  res.status(200).send("Massive add event sent");         
+
+});
 
 //get all active pairs
 app.get('/api/v1/pairs' , function(req, res){
 	 
 	  mongoapi.findPairs(function(docs) {
-
-	  	  res.send(docs);
-          
+	  	  res.send(docs);         
       });
 
 });
@@ -39,6 +50,8 @@ app.post('/api/v1/insert/:pair', function(req,res) {
 
 });
 
+// SPIKES API'S
+
 //only for test purposes
 app.post('/api/v1/spike/clean', function(req,res) {
 
@@ -57,6 +70,29 @@ app.post('/api/v1/spike/:pair', function(req,res) {
 
 });
 
+// DATA ANALYSIS API'S
+
+//get all data for a speciifc pair
+app.get('/api/v1/data/analyzepair/:pair', function(req,res) {
+
+	analyzer.getPairData(req.params.pair, function(market) {
+	  	  res.status(market.code);
+	  	  res.send(market);
+    });
+
+});
+
+//get all data of every market (pair)
+app.get('/api/v1/data/analyze', function(req,res) {
+
+	analyzer.getAllData(function(markets) {
+	  	  res.status(markets.code);
+	  	  res.send(markets);
+    });
+
+});
+
+//write all data in an csv file
 app.get('/api/v1/data/excel', function(req,res) {
 
 	analyzer.writeSpikesCsv(function(resp) {
@@ -65,7 +101,6 @@ app.get('/api/v1/data/excel', function(req,res) {
     });
 
 });
-
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}!`);

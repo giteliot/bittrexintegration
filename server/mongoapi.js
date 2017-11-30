@@ -10,6 +10,37 @@ const response = {"code":500,
 					"message":"Generic Error"};
 
 
+//insert all market with pairs :pair-*
+mongoapi.insertAllPairs = function(currency) {
+	bittrexapi.getAllMarkets(currency, function(pairs) {
+		let c = pairs.length;
+		pairs.forEach(function(pair) {
+			mongoapi.insertPair(pair, (result) => {
+
+				if (result.code == 200)
+					console.log(pair+" sucessfully added");
+				c--;
+				if (c == 0) db.close();
+				
+			});
+		});
+	});
+}
+
+//replace all spikes of a pair
+mongoapi.replaceSpikes = function(pair, spikes, callback) {
+	MongoClient.connect(config.db.url, function(err, db) {
+
+		const collection = db.collection('pairs');
+		collection.update({'pair':pair}, {'$set':{'spikes':spikes}}, function(err,response){
+			//console.log(response);
+			callback(response.result.nModified);
+			db.close();
+		});
+	});
+}
+
+
 //insert spike to an existing pair
 mongoapi.insertSpike = function(pair, perc, value, callback) {
 
@@ -135,6 +166,23 @@ mongoapi.findPairs = function(callback) {
 
 	    callback(docs);
 	    db.close();
+
+	  });
+
+	});
+}
+
+//return the list of all available pairs [{"pair":"BTC-ETH"},...]
+mongoapi.findPair = function(pair, callback) {
+	MongoClient.connect(config.db.url, function(err, db) {
+
+	  const collection = db.collection('pairs');
+
+	  collection.findOne({"pair":pair},{"_id": 0, "pair":1, "spikes": 1})
+	  .then(function(doc) {
+
+	  	callback(doc);
+	  	db.close();
 
 	  });
 
