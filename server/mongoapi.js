@@ -9,76 +9,112 @@ const mongoapi = {};
 const response = {"code":500,
 					"message":"Generic Error"};
 
+let mongoSession;
+MongoClient.connect(config.db.url, function(err, db) {
+	mongoSession = db;
+});
 
 //insert all market with pairs :pair-*
-mongoapi.insertAllPairs = function(currency) {
-	bittrexapi.getAllMarkets(currency, function(pairs) {
-		let c = pairs.length;
-		pairs.forEach(function(pair) {
-			mongoapi.insertPair(pair, (result) => {
+mongoapi.insertAllPairs = function() {
+	bittrexapi.getLatestPrices(function(prices) {
+		const markets = [];
 
-				if (result.code == 200)
-					console.log(pair+" sucessfully added");
-				c--;
-				if (c == 0) db.close();
+		for (let pair in prices) {
+			
+				markets.push({
+					'pair':pair,
+					'spikes':[{
+						"perc":0,
+						"value":prices[pair],
+						"date": new Date()
+					}]
+				})
 				
-			});
+		};
+
+		const collection = mongoSession.collection('pairs');
+		collection.insertMany(markets)
+		.then(function(r){
+			console.log("Added "+r.insertedCount+" markets!");
 		});
 	});
 }
 
 //replace all spikes of a pair
 mongoapi.replaceSpikes = function(pair, spikes, callback) {
-	MongoClient.connect(config.db.url, function(err, db) {
 
-		const collection = db.collection('pairs');
+		const collection = mongoSession.collection('pairs');
 		collection.update({'pair':pair}, {'$set':{'spikes':spikes}}, function(err,response){
 			//console.log(response);
 			callback(response.result.nModified);
-			db.close();
 		});
-	});
+
 }
 
 
 //insert spike to an existing pair
 mongoapi.insertSpike = function(pair, perc, value, callback) {
 
+	if (value < config.MIN_VALUE) {
+		callback({"code":503,
+						"message":"Value is too low: spike won't be considered. Minimum is "+config.MIN_VALUE});
+		return;
+	}
+
+
+	const collection = mongoSession.collection('pairs');
+
+	collection.findOne({"pair":pair})
+	.then(function(doc) {
+		if (!doc) {
+			callback(response);
+			return;
+		} else {
+
+			const spike = {};
+			spike.date = new Date();
+			spike.perc = perc;
+			spike.value = value;
+
+			doc.spikes.unshift(spike);
+
+			collection.updateOne({"pair":pair},doc)
+			.then(function(r) {
+				if (r.modifiedCount > 0) {
+					callback({"code":200,
+					"message":"Pair sucessfully updated"});					
+				} else {
+					callback(response);
+
+				}
+			});
+
+		}
+	});
+
+}
+
+//clean or init the whole db system (except the conifg)
+mongoapi.init = function() {
 	MongoClient.connect(config.db.url, function(err, db) {
+		let collection = db.collection('trades');
+		collection.deleteMany()
+		  .then(function(r) {
 
-		const collection = db.collection('pairs');
+		  	let collection = db.collection('transactions');
+		  	collection.deleteMany()
+			  .then(function(r) {
 
-		collection.findOne({"pair":pair})
-		.then(function(doc) {
-			if (!doc) {
-				callback(response);
-				db.close();
-				return;
-			} else {
+			  	let collection = db.collection('pairs');
 
-				const spike = {};
-				spike.date = new Date();
-				spike.perc = perc;
-				spike.value = value;
-
-				doc.spikes.unshift(spike);
-
-				collection.updateOne({"pair":pair},doc)
-				.then(function(r) {
-					if (r.modifiedCount > 0) {
-						callback({"code":200,
-						"message":"Pair sucessfully updated"});					
-					} else {
-						callback(response);
-
-					}
-					db.close();
-
+			  	collection.deleteMany()
+				  .then(function(r) {
+				  	db.close();
+				  	mongoapi.insertAllPairs();
 				});
-
-			}
+			});
+		  	
 		});
-
 	});
 }
 

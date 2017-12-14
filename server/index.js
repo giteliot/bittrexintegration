@@ -7,7 +7,11 @@ const trader = require('./trader');
 const request = require('request');
 const PORT = process.env.PORT || 9000;
 
-
+//INIT
+app.post('/api/v1/app/init', function(req,res){	
+	res.status(200).send("Init event sent");
+	mongoapi.init();
+});
 
 // PAIR API'S
 

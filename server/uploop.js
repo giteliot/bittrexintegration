@@ -3,6 +3,7 @@
 const mongoapi = require('./mongoapi');
 const bittrexapi = require('./bittrexapi');
 const analyzer = require('./analyzer');
+const trader = require('./trader.js');
 const config = require('./config');
 const UpLoop = {};
 
@@ -10,16 +11,19 @@ UpLoop.update = function() {
 	console.log("Updating spikes");
 		mongoapi.findPairs(function(pairs) {
 			bittrexapi.getLatestPrices(function(prices){
-				pairs.forEach(function(pair) {
-					UpLoop.analyzeMarket(pair,prices[pair.pair],config.SPIKE,config.MEMORY);
-				});
+				trader.getSellables(function(sellables) {
+					pairs.forEach(function(pair) {
+						if (prices && sellables)
+							UpLoop.analyzeMarket(pair,prices[pair.pair],config.SPIKE,config.MEMORY, sellables);
+						else
+							console.log("Something went wrong...skipping update");
+					});
+				});			
 			});
-
 		});
 }
 
-UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize) {
-
+UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 	const name = pair.pair;
 	let spikes = pair.spikes;
 	let cleanedCount = UpLoop.cleanOldSpikes(spikes,memorySize);
@@ -46,7 +50,7 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize) {
 	} else {
 
 		const currentPrice = pair.spikes[0].value;
-		if (price && Math.abs(price/currentPrice-1)*100 > spikeSize ) {
+		if (price && Math.abs(price/currentPrice-1)*100 >= spikeSize ) {
 			const perc = (price/currentPrice-1)*100;
 			spikes.unshift({
 	            "date": new Date(),
@@ -60,12 +64,26 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize) {
 			if (perc < 0) {
 				let analysis = analyzer.getMarketAnalysis(pair);
 				if (analysis.rank > config.ALERTRANK) {
-					console.log("***************************************");
-					console.log(">>> SUPER MEGA OFFER FOR MARKET "+name+"!! HOLY SHIT YOU GONNA BE RITCH, SON <<<");
-					console.log("***************************************");
-					//add buy order to trader
+
+					trader.placeBuy(name, price, function(modified){
+						if (modified && modified != -1) {
+							console.log(">>> Bought "+name+" for "+price);
+						} else {
+							console.log("Something went wrong buying "+name);
+						}
+					});
+
 				}
-			} //else if should buy -- update trader
+			}  else if ( sellables.indexOf(name) != -1 ) {
+
+				trader.placeSell(name, price, function(modified){
+					if (modified && modified != -1) {
+					} else {
+						console.log("Something went wrong selling "+name);
+					}
+				});
+
+			}
 		}
 		
 	}

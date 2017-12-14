@@ -14,9 +14,16 @@ describe("Trader", function() {
 		});
 	});*/
 
-	it("sells a market like a good boy", function() {
-		trader.placeSell("ETH-NMR", 0.00143,function(modified){
+	/*it("sells a market like a good boy", function() {
+		trader.placeSell("BTC-LSK", 0.00143,function(modified){
 			expect(modified).to.equal(1);
+		});
+	});*/
+
+	it("gets all good boi sellablez", function() {
+		trader.getSellables( function(sellablez){
+			console.log(sellablez);
+			expect(sellablez.length).to.equal(1);
 		});
 	});
 });

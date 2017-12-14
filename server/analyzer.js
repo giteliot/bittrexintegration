@@ -73,7 +73,7 @@ analyzer.getMarketAnalysis = function(market) {
 
 	for (let k = 0; k < spikes.length - 1; k++) {
 		let prev = spikes[k].perc;
-		if (prev > 0) continue;
+		if (prev >= 0) continue;
 		let current = spikes[k+1].perc;
 		if (current > 0) 
 			good++;

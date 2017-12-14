@@ -64,7 +64,7 @@ bittrexapi.getLatestPrice = function(pair, callback) {
 	});
 }
 
-bittrexapi.getAllMarkets = function(currency,callback) {
+bittrexapi.getAllMarkets = function(callback) {
 	bittrex.getmarkets( function( data, err ) {
 		if (err) {
 			callback();
@@ -72,7 +72,6 @@ bittrexapi.getAllMarkets = function(currency,callback) {
 		} 
 		const pairs = [];
 		data.result.forEach(function(market) {
-			if (market.BaseCurrency.toUpperCase() == currency.toUpperCase())
 				pairs.push(market.MarketName);
 		});
 		callback(pairs);
