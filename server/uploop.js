@@ -8,7 +8,7 @@ const config = require('./config');
 const UpLoop = {};
 
 UpLoop.update = function() {
-	console.log("Updating spikes");
+	console.log("Updating spikes "+(new Date()));
 		mongoapi.findPairs(function(pairs) {
 			bittrexapi.getLatestPrices(function(prices){
 				trader.getSellables(function(sellables) {

@@ -20,7 +20,7 @@ mongoapi.insertAllPairs = function() {
 		const markets = [];
 
 		for (let pair in prices) {
-			
+			if (pair.split("-")[0] == "BTC" || pair.split("-")[0] == "ETH")
 				markets.push({
 					'pair':pair,
 					'spikes':[{

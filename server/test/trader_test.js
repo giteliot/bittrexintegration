@@ -22,8 +22,15 @@ describe("Trader", function() {
 
 	it("gets all good boi sellablez", function() {
 		trader.getSellables( function(sellablez){
-			console.log(sellablez);
 			expect(sellablez.length).to.equal(1);
+		});
+	});
+
+	it("tells how much of a good boi bot he is", function(){
+		console.log("AM I GOOD BOT?");
+		trader.getGains(function(gainz) {
+			console.log(gainz);
+			expect(gainz.eth).to.equal(0);
 		});
 	});
 });

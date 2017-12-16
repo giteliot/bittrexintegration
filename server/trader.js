@@ -41,7 +41,6 @@ trader.placeBuy = function(market, price, callback) {
 	
 }
 
-//TODO rework del sell per il nuovo DATA MODEL dei trades
 trader.placeSell = function(market, price, callback) {
 
 	const collection = mongoSession.collection('trades');	
@@ -86,6 +85,66 @@ trader.placeSell = function(market, price, callback) {
 
 trader.getGainz = function(amount, priceOld, priceNew, fees) {
 	return amount*(priceNew/priceOld-1-fees*(priceNew/priceOld+1));
+}
+
+//function not used in the loop
+trader.getGains = function(callback, dateStart, dateEnd) {
+
+	const collection = mongoSession.collection('transactions');
+	const query = {};
+
+	if (dateStart || dateEnd)
+		query.date = {};
+
+	if (dateStart) 
+		query.date.$gte = new Date(dateStart)
+
+	if (dateEnd) 
+		query.date.$lt = new Date(dateEnd)
+
+	collection.find(query).toArray(function(err,docs) {
+		let ethGain = 0;
+		let btcGain = 0;
+
+		docs.forEach(function(doc){
+			if(doc.market.split("-")[0] == "BTC")
+				btcGain += doc.gain;
+			else
+				ethGain += doc.gain;
+		});
+
+		callback ({
+			"ethGain" : ethGain,
+			"btcGain" : btcGain
+		});
+	});
+}
+
+trader.getBuys = function(callback) {
+	const collection = mongoSession.collection('trades');
+
+	collection.find({},{"_id":0,"market":1,"price":1,"date":1}).toArray(function(err, docs) {
+	    callback(docs);
+	});
+}
+
+trader.getTransactionHistory = function(callback, dateStart, dateEnd) {
+
+	const collection = mongoSession.collection('transactions');
+	const query = {};
+
+	if (dateStart || dateEnd)
+		query.date = {};
+
+	if (dateStart) 
+		query.date.$gte = new Date(dateStart)
+
+	if (dateEnd) 
+		query.date.$lt = new Date(dateEnd)
+
+	collection.find(query,{"_id":0,"market":1,"gain":1,"date":1}).toArray(function(err,docs) {
+		callback(docs);
+	});
 }
 
 module.exports = trader;

@@ -7,11 +7,57 @@ const trader = require('./trader');
 const request = require('request');
 const PORT = process.env.PORT || 9000;
 
+//*** USEFUL API'S ***
+
 //INIT
-app.post('/api/v1/app/init', function(req,res){	
+//clean the database, reinitiate with all markets on bittrex
+app.post('/api/v1/app/init', function(req,res){
 	res.status(200).send("Init event sent");
 	mongoapi.init();
 });
+
+//TRADING
+
+//get gains between two timestamps e.g. /api/v1/trade/gains?s='2017-12-05'&e='2017-12-21'
+//parameters are optional, full syntax is 2017-12-04T23:00:00.000Z
+app.get('/api/v1/trade/gains' ,function(req,res) {
+	const startDate = req.query.s;
+	const endDate = req.query.e;
+
+	trader.getGains(function(gains) {
+		if (!gains || gains.ethGain == undefined) 
+			res.status(501).send("Could not retrieve gains. Please try again later.");
+		else
+			res.status(200).send(gains);
+
+	}, startDate, endDate);
+});
+
+//retrieve all boughts currencies that are not yet sold
+app.get('/api/v1/trade/outstanding', function(req,res) {
+	trader.getBuys(function(buys) {
+		if (!buys) 
+			res.status(501).send("Could not retrieve outstanding trades. Please try again later.");
+		else
+			res.status(200).send(buys);
+	});
+});
+
+//retrieve all closed transactions between two (optional) dates (timestamps)
+app.get('/api/v1/trade/history' ,function(req,res) {
+	const startDate = req.query.s;
+	const endDate = req.query.e;
+
+	trader.getTransactionHistory(function(transactions) {
+		if (!transactions) 
+			res.status(501).send("Could not retrieve transaction history. Please try again later.");
+		else
+			res.status(200).send(transactions);
+
+	}, startDate, endDate);
+});
+
+//*** END USEFUL API'S ***
 
 // PAIR API'S
 
