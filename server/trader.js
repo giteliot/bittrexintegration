@@ -54,6 +54,11 @@ trader.placeSell = function(market, price, callback) {
 			let defBuyAmount = baseCurrency == "BTC" ? config.BUY_AM_BTC : config.BUY_AM_ETH;
 			let gain = trader.getGainz(defBuyAmount,priceOld,price,config.FEES);
 
+			if (gain < 0) {
+				console.log("WARN: I decided not to sell "+market+", otherwise I would have sold short. Wait or sell it manually!");
+				return;
+			}
+
 			collection.deleteOne({"market":market,"price":priceOld})
 			.then(function(r){
 				if (!r || !r.deletedCount)

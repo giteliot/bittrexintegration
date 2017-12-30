@@ -50,7 +50,7 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 	} else {
 
 		const currentPrice = pair.spikes[0].value;
-		if (price && Math.abs(price/currentPrice-1)*100 >= spikeSize ) {
+		if (price && Math.abs(price/currentPrice-1)*100 > spikeSize ) {
 			const perc = (price/currentPrice-1)*100;
 			spikes.unshift({
 	            "date": new Date(),
@@ -63,16 +63,18 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 
 			if (perc < 0) {
 				let analysis = analyzer.getMarketAnalysis(pair);
-				if (analysis.rank > config.ALERTRANK) {
+				if (analysis.rank >= config.ALERTRANK) {
+					if (analysis.rank > config.ALERTRANK || pair.spikes[0].perc < 0) {
 
-					trader.placeBuy(name, price, function(modified){
-						if (modified && modified != -1) {
-							console.log(">>> Bought "+name+" for "+price);
-						} else {
-							console.log("Something went wrong buying "+name);
-						}
-					});
+						trader.placeBuy(name, price, function(modified){
+							if (modified && modified != -1) {
+								console.log(">>> Bought "+name+" for "+price);
+							} else {
+								console.log("Something went wrong buying "+name);
+							}
+						});
 
+					}
 				}
 			}  else if ( sellables.indexOf(name) != -1 ) {
 
