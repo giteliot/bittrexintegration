@@ -63,8 +63,7 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 
 			if (perc < 0) {
 				let analysis = analyzer.getMarketAnalysis(pair);
-				if (analysis.rank >= config.ALERTRANK) {
-					if (analysis.rank > config.ALERTRANK || pair.spikes[0].perc < 0) {
+				if (analysis.rank > config.ALERTRANK) {
 
 						trader.placeBuy(name, price, function(modified){
 							if (modified && modified != -1) {
@@ -74,7 +73,6 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 							}
 						});
 
-					}
 				}
 			}  else if ( sellables.indexOf(name) != -1 ) {
 

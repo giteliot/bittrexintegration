@@ -62,8 +62,36 @@ analyzer.getPairData = function(pair, callback) {
 	});
 }
 
-
+//V2
 analyzer.getMarketAnalysis = function(market) {
+
+	const spikes = market.spikes;
+
+	let change = 0;
+	let up = 0;
+	let down = 0;
+
+	for (let k = 0; k < spikes.length - 1; k++) {
+		if (spikes[k].perc*spikes[k+1]*perc < 0)
+			change++;
+		else if(spikes[k] > 0)
+			up++;
+		else
+			down++;
+	}
+
+	const analysis = {};
+	analysis.rank = (change*2+up-down)/spikes.length;
+	analysis.switch = change;
+	analysis.upswing = up;
+	analysis.downswing = down;
+	analysis.spikes = spikes.length;
+
+	return analysis;
+}
+
+//V1 - Obsolete (?)
+/*analyzer.getMarketAnalysis = function(market) {
 
 	const spikes = market.spikes;
 
@@ -88,6 +116,6 @@ analyzer.getMarketAnalysis = function(market) {
 	analysis.totalSpikes = spikes.length;
 
 	return analysis;
-}
+}*()
 
 module.exports = analyzer;
