@@ -1,6 +1,6 @@
 import React from 'react';
 import TextField from './TextField';
-import PercentageRow from './PercentageRow';
+import GainsSection from './GainsSection';
 
 class Body extends React.Component {
 	constructor() {
@@ -37,22 +37,9 @@ class Body extends React.Component {
 		return (
 				<div>
 				 <div className="App-intro">
-			      Welcome to the Money Maker
-			      </div>
-				 <TextField parentKeyPress={this.addPair.bind(this)}/>
-	       	 {/*<ul>
-          		  {this.state.pairs.map(function(pair,i){
-            	   return <li key={i}>
-            	   		   <div style={float}>
-		            	   <img onClick = {this.removePair.bind(this,pair)} src={require('../cancel-button.png')} style={xbtn} alt="X"/>
-		            	   <PercentageRow pair = {pair}/>
-		            	   </div>
-		            	  </li>;
-          		  }, this)}
-        		 </ul>*/}
-        		 <div style={float}>
-        		 <PercentageRow pair = "BTC-ETH"/>
-        		 </div>
+			      Welcome to The Good Boi Bot
+			     </div>
+        		 <GainsSection/>
 	       		</div>
 			);
 

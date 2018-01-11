@@ -95,7 +95,7 @@ trader.getGainz = function(amount, priceOld, priceNew, fees) {
 //function not used in the loop
 trader.getGains = function(callback, dateStart, dateEnd) {
 
-	const collection = mongoSession.collection('transactions');
+	let collection = mongoSession.collection('transactions');
 	const query = {};
 
 	if (dateStart || dateEnd)
@@ -118,10 +118,33 @@ trader.getGains = function(callback, dateStart, dateEnd) {
 				ethGain += doc.gain;
 		});
 
-		callback ({
-			"ethGain" : ethGain,
-			"btcGain" : btcGain
+		let collection = mongoSession.collection('trades');
+
+		collection.find(query).toArray(function(err,docs) {
+
+			let ethOut = 0;
+			let btcOut = 0;
+
+			docs.forEach(function(doc){
+				if(doc.market.split("-")[0] == "BTC")
+					btcOut += config.BUY_AM_BTC;
+				else
+					ethOut += config.BUY_AM_ETH;
+			});
+
+			const gainRecap = {};
+			gainRecap.ethGain = ethGain;
+			gainRecap.btcGain = btcGain;
+			gainRecap.ethOutstanding = ethOut;
+			gainRecap.btcOutstanding = btcOut;
+			gainRecap.netEth = ethGain-ethOut;
+			gainRecap.netBtc = btcGain-btcOut;
+
+			callback (gainRecap);
+
 		});
+
+
 	});
 }
 

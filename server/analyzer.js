@@ -75,7 +75,7 @@ analyzer.getMarketAnalysis = function(market) {
 
 		if (spikes[k].perc*spikes[k+1].perc < 0)
 			change++;
-		else if(spikes[k] > 0)
+		else if(spikes[k].perc > 0)
 			up++;
 		else
 			down++;

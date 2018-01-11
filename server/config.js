@@ -5,8 +5,8 @@ config.db = {};
 config.db.url = 'mongodb://localhost:27017/brexdb';
 
 //constants
-config.LOOP_INTERVAL = 20; //interval in seconds
-config.SPIKE = 1; //percentage of a valid spike
+config.LOOP_INTERVAL = 6000; //interval in seconds
+config.SPIKE = 10; //percentage of a valid spike
 config.MEMORY = 24; //hours of history
 config.ALERTRANK = 1; //if there is a low for a market with rank > ALERTRANK, an alert is sent
 config.MIN_SPIKES = 6; //number of minimum spikes to consider a buy
