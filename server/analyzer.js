@@ -2,7 +2,7 @@
 
 const mongoapi = require('./mongoapi');
 const fs = require('fs');
-
+const config = require('./config');
 const analyzer = {};
 
 const response = {"code":500,
@@ -62,7 +62,42 @@ analyzer.getPairData = function(pair, callback) {
 	});
 }
 
-//V2
+// *** IMPLEMENTED RANKING ALGORITHMS ***
+
+//V1.2
+analyzer.getMarketAnalysis = function(market) {
+
+	const spikes = market.spikes;
+
+	let change = 0;
+	let up = 0;
+	let down = 0;
+	let spikeValues = spikes[0].perc;
+
+	for (let k = 0; k < spikes.length - 1; k++) {
+		spikeValues += spikes[k+1].perc;
+		if (spikes[k].perc*spikes[k+1].perc < 0)
+			change++;
+		else if(spikes[k].perc > 0)
+			up++;
+		else
+			down++;
+	}
+
+	const analysis = {};
+	analysis.rank = change/spikes.length;
+	analysis.switch = change;
+	analysis.upswing = up;
+	analysis.downswing = down;
+	analysis.spikes = spikes.length;
+	analysis.spikeValues = spikeValues;
+	analysis.buyable = analysis.rank > 0.5 && analysis.spikes > 5 && analysis.switch > 2 && analysis.spikeValues > -1*config.SPIKE && analysis.spikeValues < -3*config.SPIKE;
+
+	return analysis;
+}
+
+//V1.1
+/*
 analyzer.getMarketAnalysis = function(market) {
 
 	const spikes = market.spikes;
@@ -90,8 +125,9 @@ analyzer.getMarketAnalysis = function(market) {
 
 	return analysis;
 }
+*/
 
-//V1 - Obsolete (?)
+//V1.0
 /*analyzer.getMarketAnalysis = function(market) {
 
 	const spikes = market.spikes;

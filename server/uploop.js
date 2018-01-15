@@ -63,7 +63,7 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 
 			if (perc < 0) {
 				let analysis = analyzer.getMarketAnalysis(pair);
-				if (analysis.rank > config.ALERTRANK && analysis.spikes >= config.MIN_SPIKES) {
+				if (analysis.buyable == true) {
 
 						trader.placeBuy(name, price, function(modified){
 							if (modified && modified != -1) {

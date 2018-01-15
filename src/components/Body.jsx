@@ -1,6 +1,10 @@
 import React from 'react';
 import TextField from './TextField';
 import GainsSection from './GainsSection';
+import AnalyzerSection from './AnalyzerSection';
+import OustandingSection from './OutstandingSection';
+import HistorySection from './HistorySection';
+
 
 class Body extends React.Component {
 	constructor() {
@@ -40,6 +44,9 @@ class Body extends React.Component {
 			      Welcome to The Good Boi Bot
 			     </div>
         		 <GainsSection/>
+        		 <AnalyzerSection/>
+        		 <OustandingSection/>
+        		 <HistorySection/>
 	       		</div>
 			);
 

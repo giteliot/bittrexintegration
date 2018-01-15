@@ -8,9 +8,7 @@ class GainsSection extends React.Component {
 	}
 
 	componentDidMount() {
-	    /*setInterval(function() {
-	    	console.log("Updating value of "+this.props.pair);
-	    }.bind(this), 60000);*/
+
 	    const _this = this;
 		fetch('/api/v1/trade/gains')
 		  .then(function(response) {
@@ -22,7 +20,6 @@ class GainsSection extends React.Component {
 	}
 
 	render() {
-		const txt = this.props.txt;
 
 		const padding = {
 			paddingLeft: "1.5em",
