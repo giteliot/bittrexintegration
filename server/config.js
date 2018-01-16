@@ -11,7 +11,7 @@ config.MEMORY = 24; //hours of history
 config.ALERTRANK = 1; //if there is a low for a market with rank > ALERTRANK, an alert is sent
 config.MIN_SPIKES = 6; //number of minimum spikes to consider a buy
 config.BUY_AM_BTC = 0.01; //amount of BTC worth of Currency bought in each transaction
-config.BUY_AM_ETH = 0.2; //amount of ETH worth of Currency bought in each transaction
+config.BUY_AM_ETH = 0.1; //amount of ETH worth of Currency bought in each transaction
 config.FEES = 0.0025; //fees % (simulation only)
 
 module.exports = config;
