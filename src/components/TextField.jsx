@@ -16,11 +16,11 @@ class TextField extends React.Component {
 			this.props.parentKeyPress(this.state.value)
 		 }
 		}
+	
 
 	render() {
 		const style = {
 			padding: "1em",
-			textAlign: "center"
 	    };
 
 		return (

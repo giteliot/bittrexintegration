@@ -29,6 +29,7 @@ class HistorySection extends React.Component {
 		  .then(function(response) {
 		    return response.json();
 		  }).then(function(json) {
+		  	if (json && json.length > 0)
 		    _this.setState({transactions: reverse(json)});
 		  });
 
