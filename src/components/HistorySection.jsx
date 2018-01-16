@@ -18,7 +18,7 @@ class HistorySection extends React.Component {
 		const reverse = function(arr) {
 		   var result = [],
 		       ii = arr.length;
-		   for (var i = ii - 1;i !== 0;i--) {
+		   for (var i = ii - 1;i > -1;i--) {
 		       result.push(arr[i]);
 		   }
 		   return result;
