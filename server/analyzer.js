@@ -75,6 +75,8 @@ analyzer.getMarketAnalysis = function(market) {
 	let spikeValues = spikes[0].perc;
 
 	for (let k = 0; k < spikes.length - 1; k++) {
+		if (spikes[k].perc == 0)
+			continue;
 		spikeValues += spikes[k+1].perc;
 		if (spikes[k].perc*spikes[k+1].perc < 0)
 			change++;
@@ -85,7 +87,7 @@ analyzer.getMarketAnalysis = function(market) {
 	}
 
 	const analysis = {};
-	analysis.rank = change/spikes.length;
+	analysis.rank = change/(spikes.length-1);
 	analysis.switch = change;
 	analysis.upswing = up;
 	analysis.downswing = down;
