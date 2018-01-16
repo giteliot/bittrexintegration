@@ -93,7 +93,7 @@ analyzer.getMarketAnalysis = function(market) {
 	analysis.downswing = down;
 	analysis.spikes = spikes.length;
 	analysis.spikeValues = spikeValues;
-	analysis.buyable = analysis.rank > 0.5 && analysis.spikes > 5 && analysis.switch > 2 && analysis.spikeValues > -1*config.SPIKE && analysis.spikeValues < -3*config.SPIKE;
+	analysis.buyable = analysis.rank > 0.5 && analysis.spikes > 5 && analysis.switch > 2 && analysis.spikeValues > -1.5*config.SPIKE && analysis.spikeValues < 3.5*config.SPIKE;
 
 	return analysis;
 }
