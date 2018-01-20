@@ -53,35 +53,34 @@ trader.placeSell = function(market, price, callback) {
 			let baseCurrency = market.split('-')[0];
 			let defBuyAmount = baseCurrency == "BTC" ? config.BUY_AM_BTC : config.BUY_AM_ETH;
 			let gain = trader.getGainz(defBuyAmount,priceOld,price,config.FEES);
+			const now = new Date();
+			
+			if (gain > defBuyAmount*config.SPIKE/100 || ( (now.getTime()-doc.date.getTime()) > 1000*3600*config.MEMORY) && gain > 0) {			
 
-			if (gain < 0) {
-				console.log("WARN: I decided not to sell "+market+", otherwise I would have sold short. Wait or sell it manually!");
-				return;
+				collection.deleteOne({"market":market,"price":priceOld})
+				.then(function(r){
+					if (!r || !r.deletedCount)
+						console.log("Something went wrong cleaning the buy order for "+market);
+				});
+				//remove trade
+				const logCollection = mongoSession.collection('transactions');
+				logCollection.insertOne({
+						"market": market,
+						"gain": gain,
+						"date": new Date()
+				})
+				.then(function(r) {
+
+					if (!(r.insertedCount > 0) )
+						console.log("ERROR Adding transaction for market "+market);
+					else {
+						console.log("<<< Sold "+market+" for "+price+": gained "+gain);
+
+					}
+
+				});
+		
 			}
-
-			collection.deleteOne({"market":market,"price":priceOld})
-			.then(function(r){
-				if (!r || !r.deletedCount)
-					console.log("Something went wrong cleaning the buy order for "+market);
-			});
-			//remove trade
-			const logCollection = mongoSession.collection('transactions');
-			logCollection.insertOne({
-					"market": market,
-					"gain": gain,
-					"date": new Date()
-			})
-			.then(function(r) {
-
-				if (!(r.insertedCount > 0) )
-					console.log("ERROR Adding transaction for market "+market);
-				else {
-					console.log("<<< Sold "+market+" for "+price+": gained "+gain);
-
-				}
-
-
-			});
 
 		});
 

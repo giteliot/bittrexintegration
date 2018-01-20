@@ -23,6 +23,12 @@ UpLoop.update = function() {
 		});
 }
 
+
+//1. Clean old spikes
+//2. Check if you can sell the market (if yes -> sell)
+//3. Reinitialize spikes if empty
+//4. If not empty, check if buyable (if yes -> buy)
+//5. If needed, update spikes to db
 UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 	const name = pair.pair;
 	let spikes = pair.spikes;
@@ -33,6 +39,17 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 
 		console.log("Cleaning "+cleanedCount+" from market "+name);
 		upNeeded = true;
+
+	}
+
+	if ( sellables.indexOf(name) != -1 ) {
+
+		trader.placeSell(name, price, function(modified){
+			if (modified && modified != -1) {
+			} else {
+				console.log("Something went wrong selling "+name);
+			}
+		});
 
 	}
 
@@ -50,16 +67,29 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 	} else {
 
 		const currentPrice = pair.spikes[0].value;
+
+		//IF There is a Spike
 		if (price && Math.abs(price/currentPrice-1)*100 > spikeSize ) {
 			const perc = (price/currentPrice-1)*100;
+			const numSpikes = Math.floor(perc/spikeSize)-1;
+			for (let k = 0; k < numSpikes; k++) {
+				spikes.unshift({
+		            "date": new Date(),
+		            "perc": spikeSize,
+		            "value": currentPrice*(100+spikeSize)/100
+        		});
+
+        		console.log('Created split-spike for market '+name+': '+spikeSize.toFixed(2)+"%");
+
+			}
 			spikes.unshift({
 	            "date": new Date(),
-	            "perc": perc,
+	            "perc": perc-(spikeSize*numSpikes),
 	            "value": price
         	});
 
 			upNeeded = true;
-			console.log('Found spike for market '+name+': '+perc.toFixed(2)+"%");
+			console.log('Found spike for market '+name+': '+(perc-(spikeSize*numSpikes)).toFixed(2)+"%");
 
 			if (perc < 0) {
 				let analysis = analyzer.getMarketAnalysis(pair);
@@ -74,17 +104,8 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 						});
 
 				}
-			}  else if ( sellables.indexOf(name) != -1 ) {
-
-				trader.placeSell(name, price, function(modified){
-					if (modified && modified != -1) {
-					} else {
-						console.log("Something went wrong selling "+name);
-					}
-				});
-
-			}
-		}
+			} 
+		} 
 		
 	}
 

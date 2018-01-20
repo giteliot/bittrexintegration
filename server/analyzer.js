@@ -73,6 +73,46 @@ analyzer.getMarketAnalysis = function(market) {
 	let up = 0;
 	let down = 0;
 	let spikeValues = spikes[0].perc;
+	let rank = 0;
+
+	for (let k = 0; k < spikes.length - 1; k++) {
+		if (spikes[k].perc == 0)
+			continue;
+		spikeValues += spikes[k+1].perc;
+		if (spikes[k].perc*spikes[k+1].perc < 0) {
+			change++;
+			if (spikes[k].perc < 0)
+				rank++;
+		} else if(spikes[k].perc > 0) {
+			up++;
+		} else {
+			down++;
+		}
+	}
+
+	rank -= down;
+
+	const analysis = {};
+	analysis.rank = rank;
+	analysis.ratiorank = change/(spikes.length-1);
+	analysis.switch = change;
+	analysis.upswing = up;
+	analysis.downswing = down;
+	analysis.spikes = spikes.length;
+	analysis.spikeValues = spikeValues;
+	analysis.buyable = analysis.rank > config.ALERTRANK && analysis.spikes > 6 && analysis.ratiorank > config.ALERTRATIO;
+	return analysis;
+}
+
+//V1.2
+/*analyzer.getMarketAnalysis = function(market) {
+
+	const spikes = market.spikes;
+
+	let change = 0;
+	let up = 0;
+	let down = 0;
+	let spikeValues = spikes[0].perc;
 
 	for (let k = 0; k < spikes.length - 1; k++) {
 		if (spikes[k].perc == 0)
@@ -93,41 +133,10 @@ analyzer.getMarketAnalysis = function(market) {
 	analysis.downswing = down;
 	analysis.spikes = spikes.length;
 	analysis.spikeValues = spikeValues;
-	analysis.buyable = analysis.rank > 0.5 && analysis.spikes > 5 && analysis.switch > 2 && analysis.spikeValues > -1.5*config.SPIKE && analysis.spikeValues < 3.5*config.SPIKE;
+	analysis.buyable = analysis.rank > 0.5 && analysis.spikes > 7 && analysis.switch > 3 && analysis.spikeValues > -1.5*config.SPIKE && analysis.spikeValues < 3.5*config.SPIKE;
 
 	return analysis;
-}
-
-//V1.1
-/*
-analyzer.getMarketAnalysis = function(market) {
-
-	const spikes = market.spikes;
-
-	let change = 0;
-	let up = 0;
-	let down = 0;
-
-	for (let k = 0; k < spikes.length - 1; k++) {
-
-		if (spikes[k].perc*spikes[k+1].perc < 0)
-			change++;
-		else if(spikes[k].perc > 0)
-			up++;
-		else
-			down++;
-	}
-
-	const analysis = {};
-	analysis.rank = (change*2+up-down)/(spikes.length+1);
-	analysis.switch = change;
-	analysis.upswing = up;
-	analysis.downswing = down;
-	analysis.spikes = spikes.length;
-
-	return analysis;
-}
-*/
+}*/
 
 //V1.0
 /*analyzer.getMarketAnalysis = function(market) {

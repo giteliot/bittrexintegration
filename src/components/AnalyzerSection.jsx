@@ -51,7 +51,8 @@ class AnalyzerSection extends React.Component {
 					<div>
 					<KeyValueBlock txt = "Market: " val = {this.state.pair}/>
 					<KeyValueBlock txt = "Buyable: " val = {""+this.state.analysis.buyable}/>
-					<KeyValueBlock txt = "Rank: " val = {this.state.analysis.rank}/>
+					<KeyValueBlock txt = "Alert Rank: " val = {this.state.analysis.rank}/>
+					<KeyValueBlock txt = "Ratio Rank: " val = {this.state.analysis.ratiorank}/>
 					<KeyValueBlock txt = "Spikes: " val = {this.state.analysis.switch+" (sw); "+this.state.analysis.upswing+" (up); "+this.state.analysis.downswing+" (down)"}/>
 					<KeyValueBlock txt = "Total Value: " val = {this.state.analysis.spikeValues}/>
 					</div>
