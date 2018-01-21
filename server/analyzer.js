@@ -75,11 +75,11 @@ analyzer.getMarketAnalysis = function(market) {
 	let spikeValues = spikes[0].perc;
 	let rank = 0;
 
-	for (let k = 0; k < spikes.length - 1; k++) {
+	for (let k = spikes.length - 1; k > 1; k--) {
 		if (spikes[k].perc == 0)
 			continue;
-		spikeValues += spikes[k+1].perc;
-		if (spikes[k].perc*spikes[k+1].perc < 0) {
+		spikeValues += spikes[k-1].perc;
+		if (spikes[k].perc*spikes[k-1].perc < 0) {
 			change++;
 			if (spikes[k].perc < 0)
 				rank++;
@@ -94,7 +94,7 @@ analyzer.getMarketAnalysis = function(market) {
 
 	const analysis = {};
 	analysis.rank = rank;
-	analysis.ratiorank = change/(spikes.length-1);
+	analysis.ratiorank = spikes.length > 1 ? change/(spikes.length-1) : 0;
 	analysis.switch = change;
 	analysis.upswing = up;
 	analysis.downswing = down;
