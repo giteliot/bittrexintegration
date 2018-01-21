@@ -71,25 +71,29 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 		//IF There is a Spike
 		if (price && Math.abs(price/currentPrice-1)*100 > spikeSize ) {
 			const perc = (price/currentPrice-1)*100;
-			const numSpikes = Math.floor(perc/spikeSize)-1;
+			const mult = perc > 0? 1 : -1;
+
+			const numSpikes = (Math.floor((mult*perc)/spikeSize))-1;
+			
 			for (let k = 0; k < numSpikes; k++) {
 				spikes.unshift({
 		            "date": new Date(),
-		            "perc": spikeSize,
-		            "value": currentPrice*(100+spikeSize)/100
+		            "perc": mult*spikeSize,
+		            "value": currentPrice*(100+mult*spikeSize*(k+1))/100
         		});
 
-        		console.log('Created split-spike for market '+name+': '+spikeSize.toFixed(2)+"%");
+        		console.log('Created split-spike for market '+name+': '+mult*spikeSize.toFixed(2)+"%");
 
 			}
+
 			spikes.unshift({
 	            "date": new Date(),
-	            "perc": perc-(spikeSize*numSpikes),
+	            "perc": perc-mult*(spikeSize*numSpikes),
 	            "value": price
         	});
 
 			upNeeded = true;
-			console.log('Found spike for market '+name+': '+(perc-(spikeSize*numSpikes)).toFixed(2)+"%");
+			console.log('Found spike for market '+name+': '+(perc-mult*(spikeSize*numSpikes)).toFixed(2)+"%");
 
 			if (perc < 0) {
 				let analysis = analyzer.getMarketAnalysis(pair);
