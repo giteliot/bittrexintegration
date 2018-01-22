@@ -100,7 +100,7 @@ analyzer.getMarketAnalysis = function(market) {
 	analysis.downswing = down;
 	analysis.spikes = spikes.length;
 	analysis.spikeValues = spikeValues;
-	analysis.buyable = analysis.rank > config.ALERTRANK && analysis.spikes > config.MIN_SPIKES && analysis.ratiorank > config.ALERTRATIO;
+	analysis.buyable = analysis.rank >= config.ALERTRANK && analysis.spikes > config.MIN_SPIKES && analysis.ratiorank > config.ALERTRATIO;
 	return analysis;
 }
 
