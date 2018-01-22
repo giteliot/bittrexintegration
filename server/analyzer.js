@@ -64,7 +64,7 @@ analyzer.getPairData = function(pair, callback) {
 
 // *** IMPLEMENTED RANKING ALGORITHMS ***
 
-//V1.2
+//V1.3
 analyzer.getMarketAnalysis = function(market) {
 
 	const spikes = market.spikes;
@@ -75,7 +75,7 @@ analyzer.getMarketAnalysis = function(market) {
 	let spikeValues = spikes[0].perc;
 	let rank = 0;
 
-	for (let k = spikes.length - 1; k > 1; k--) {
+	for (let k = spikes.length - 1; k > 0; k--) {
 		if (spikes[k].perc == 0)
 			continue;
 		spikeValues += spikes[k-1].perc;
