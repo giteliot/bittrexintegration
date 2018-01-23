@@ -74,19 +74,23 @@ analyzer.getMarketAnalysis = function(market) {
 	let down = 0;
 	let spikeValues = spikes[0].perc;
 	let rank = 0;
+	let chainspike = 0;
 
 	for (let k = spikes.length - 1; k > 0; k--) {
 		if (spikes[k].perc == 0)
 			continue;
 		spikeValues += spikes[k-1].perc;
 		if (spikes[k].perc*spikes[k-1].perc < 0) {
+			chainspike = 0;
 			change++;
 			if (spikes[k].perc < 0)
 				rank++;
 		} else if(spikes[k].perc > 0) {
-			up++;
+			up += chainspike+1;
+			chainspike = 1;
 		} else {
-			down++;
+			down += chainspike+1;
+			chainspike = 1;
 		}
 	}
 
