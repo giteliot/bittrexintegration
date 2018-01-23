@@ -28,6 +28,29 @@ analyzer.writeSpikesCsv = function(callback) {
 	});
 }
 
+analyzer.getSpikesData = function(callback) {
+
+	mongoapi.findPairs(function(docs){
+
+		const analysis = {};
+		const analyzable = [];
+		let totSpikes = 0;
+		let tmpSpikes;
+
+	  	docs.forEach( function(val,key) {
+	  		tmpSpikes = val.spikes.length;
+	  		totSpikes += tmpSpikes;
+	  		if (tmpSpikes > config.MIN_SPIKES)
+	  			analyzable.push(val.pair+"("+tmpSpikes+")");
+	  	});
+
+	  	analysis.totSpikes = totSpikes;
+	  	analysis.analyzable = analyzable;
+	    callback(analysis);
+	});
+
+}
+
 analyzer.getAllData = function(callback) {
 
 	mongoapi.findPairs(function(docs){

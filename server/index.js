@@ -57,6 +57,16 @@ app.get('/api/v1/trade/history' ,function(req,res) {
 	}, startDate, endDate);
 });
 
+app.get('/api/v1/data/spikes' ,function(req, res) {
+	analyzer.getSpikesData(function(analysis){
+		if (analysis) {
+			res.status(200).send(analysis); 
+		} else {
+			res.status(501).send("Could not retrieve spikes data. Please try again later.");
+		}
+	});
+});
+
 //*** END USEFUL API'S ***
 
 // PAIR API'S
