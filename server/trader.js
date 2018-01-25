@@ -151,7 +151,7 @@ trader.getGains = function(callback, dateStart, dateEnd) {
 trader.getBuys = function(callback) {
 	const collection = mongoSession.collection('trades');
 
-	collection.find({},{"_id":0,"market":1,"price":1,"date":1}).toArray(function(err, docs) {
+	collection.find({},{"_id":0,"market":1,"price":1,"date":1, "target":1}).toArray(function(err, docs) {
 	    callback(docs);
 	});
 }

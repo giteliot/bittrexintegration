@@ -48,7 +48,7 @@ class OustandingSection extends React.Component {
 			<TitleBlock txt = "Oustanding"/>
 			<div style={padding}>
 				{_state.outstanding.map((buy,i) =>
-					 <TransactionItem key = {i} orderId = {_state.outstanding.length-i} time = {buy.date} market = {buy.market} result = {buy.price}/>
+					 <TransactionItem key = {i} orderId = {_state.outstanding.length-i} time = {buy.date} market = {buy.market} result = {buy.price+" -> "+buy.target}/>
 			    )}
 			    </div>
 			</div>
