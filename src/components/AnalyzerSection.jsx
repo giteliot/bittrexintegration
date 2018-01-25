@@ -19,7 +19,6 @@ class AnalyzerSection extends React.Component {
 		    return response.json();
 		  }).then(function(json) {
 		  	if (json && json.pair)
-		  		console.log(json)
 		    	_this.setState(json);
 		  });
 	}
@@ -50,11 +49,10 @@ class AnalyzerSection extends React.Component {
 				_this.state.analysis && (
 					<div>
 					<KeyValueBlock txt = "Market: " val = {this.state.pair}/>
-					<KeyValueBlock txt = "Buyable: " val = {""+this.state.analysis.buyable}/>
-					<KeyValueBlock txt = "Alert Rank: " val = {this.state.analysis.rank}/>
-					<KeyValueBlock txt = "Ratio Rank: " val = {this.state.analysis.ratiorank}/>
-					<KeyValueBlock txt = "Spikes: " val = {this.state.analysis.switch+" (sw); "+this.state.analysis.upswing+" (up); "+this.state.analysis.downswing+" (down)"}/>
-					<KeyValueBlock txt = "Total Value: " val = {this.state.analysis.spikeValues}/>
+					<KeyValueBlock txt = "Target Buy: " val = {""+this.state.analysis.targetBuy+" ("+this.state.analysis.targetBuyPerc+"%)"}/>
+					<KeyValueBlock txt = "Alert Rank (switches): " val = {this.state.analysis.rank}/>
+					<KeyValueBlock txt = "Spikes: " val = {this.state.analysis.spikes}/>
+					<KeyValueBlock txt = "Aggregated Spikes: " val = {"L: "+this.state.analysis.latestSpike +" H: "+this.state.analysis.highestUpswing+" D: "+this.state.analysis.highestDownswing}/>
 					</div>
 				)
 				

@@ -12,12 +12,20 @@ UpLoop.update = function() {
 		mongoapi.findPairs(function(pairs) {
 			bittrexapi.getLatestPrices(function(prices){
 				trader.getSellables(function(sellables) {
-					pairs.forEach(function(pair) {
-						if (prices && sellables)
-							UpLoop.analyzeMarket(pair,prices[pair.pair],config.SPIKE,config.MEMORY, sellables);
-						else
-							console.log("Something went wrong...skipping update");
-					});
+					if (prices && sellables && pairs)
+						pairs.forEach(function(pair) {						
+								UpLoop.analyzeMarket(pair,prices[pair.pair],config.SPIKE,config.MEMORY, sellables);						
+						});
+					else {
+						console.log("!!! Something went wrong...skipping update !!!");
+						if (!prices)
+							console.log("!!! Prices not retrieved");
+						if (!sellables)
+							console.log("!!! Sellables not retrieved");
+						if (!pairs)
+							console.log("!!! Pairs not retrieved");
+
+					}
 				});			
 			});
 		});
@@ -97,9 +105,9 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 
 			if (perc < 0) {
 				let analysis = analyzer.getMarketAnalysis(pair);
-				if (analysis.buyable == true) {
+				if (analysis.buyable == true && price < analysis.targetBuy) {
 
-						trader.placeBuy(name, price, function(modified){
+						trader.placeBuy(name, price, analysis.targetSell, function(modified){
 							if (modified && modified != -1) {
 								console.log(">>> Bought "+name+" for "+price);
 							} else {
@@ -135,6 +143,11 @@ UpLoop.cleanOldSpikes = function(spikes, memorySize) {
 		spikes.pop();
 		cleanedCount++;
 		oldestSpike = spikes[spikes.length-1];
+	}
+
+	if (spikes.length > 1 && spikes[spikes.length-1].perc == 0) {
+		spikes.pop(); 
+		cleanedCount++;
 	}
 	return cleanedCount;
 }

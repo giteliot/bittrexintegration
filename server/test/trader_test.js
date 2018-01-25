@@ -33,4 +33,5 @@ describe("Trader", function() {
 			expect(gainz.eth).to.equal(0);
 		});
 	});
+
 });

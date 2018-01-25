@@ -26,13 +26,14 @@ trader.getSellables = function(callback) {
 	
 }
 
-trader.placeBuy = function(market, price, callback) {
+trader.placeBuy = function(market, price, target, callback) {
 
 	const collection = mongoSession.collection('trades');	
 
 	collection.insertOne({
 		"market":market,
 		"price":price,
+		"target": target,
 		"date":new Date()
 	})
 	.then(function(r){
@@ -55,7 +56,7 @@ trader.placeSell = function(market, price, callback) {
 			let gain = trader.getGainz(defBuyAmount,priceOld,price,config.FEES);
 			const now = new Date();
 			
-			if (gain > defBuyAmount*config.SPIKE/100 || ( (now.getTime()-doc.date.getTime()) > 1000*3600*config.MEMORY) && gain > 0) {			
+			if (price > doc.target || ( (now.getTime()-doc.date.getTime()) > 1000*3600*config.MEMORY) && gain > 0) {			
 
 				collection.deleteOne({"market":market,"price":priceOld})
 				.then(function(r){

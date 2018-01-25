@@ -87,8 +87,56 @@ analyzer.getPairData = function(pair, callback) {
 
 // *** IMPLEMENTED RANKING ALGORITHMS ***
 
-//V1.3
+//V1.4
 analyzer.getMarketAnalysis = function(market) {
+
+	const spikes = market.spikes;
+
+	let change = 0;
+	let highestup = 0;
+	let highestdown = 0;
+	let targetBuy = 0;
+	let prevspike = spikes[spikes.length - 1].perc;
+	let currentspike = 0;
+
+	for (let k = spikes.length - 2; k > -1; k--) {
+		
+		currentspike = spikes[k].perc;
+
+		if (currentspike == 0) //should never happen now..
+			continue;
+
+		if (prevspike > highestup) {
+			highestup = prevspike;
+			targetBuy = spikes[k+1].value;
+		}
+		if (prevspike < 0 && (prevspike > highestdown || highestdown == 0))
+			highestdown = prevspike;
+
+		if (prevspike*currentspike > 0)
+			prevspike += currentspike;
+		else if (prevspike*currentspike < 0) {
+			prevspike = currentspike;
+			change++;
+		}
+
+	}
+
+	const analysis = {};
+	analysis.rank = change;
+	analysis.spikes = spikes.length;
+	analysis.latestSpike = prevspike;
+	analysis.highestUpswing = highestup;
+	analysis.highestDownswing = highestdown;
+	analysis.targetBuyPerc = -Math.floor(analysis.highestUpswing);
+	analysis.targetBuy = targetBuy*(100-Math.floor(analysis.highestUpswing))/100;
+	analysis.targetSell = spikes[0].value*(100+Math.floor(-1*analysis.highestDownswing))/100;
+	analysis.buyable = analysis.rank >= config.ALERTRANK;
+	return analysis;
+}
+
+//V1.3
+/*analyzer.getMarketAnalysis = function(market) {
 
 	const spikes = market.spikes;
 
@@ -130,6 +178,7 @@ analyzer.getMarketAnalysis = function(market) {
 	analysis.buyable = analysis.rank >= config.ALERTRANK && analysis.spikes > config.MIN_SPIKES && analysis.ratiorank > config.ALERTRATIO;
 	return analysis;
 }
+*/
 
 //V1.2
 /*analyzer.getMarketAnalysis = function(market) {
