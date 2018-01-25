@@ -14,7 +14,7 @@ class GainsSection extends React.Component {
 		  .then(function(response) {
 		    return response.json();
 		  }).then(function(json) {
-		  	if (json && json.netEth && json.netBtc)
+		  	if (json)
 		    _this.setState({ethGain: json.netEth+"  ( "+json.ethGain+" - "+json.ethOutstanding+" )", 
 		    			    btcGain: json.netBtc+"  ( "+json.btcGain+" - "+json.btcOutstanding+" )"});
 		  });
