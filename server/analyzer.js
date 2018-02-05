@@ -85,6 +85,54 @@ analyzer.getPairData = function(pair, callback) {
 	});
 }
 
+//COMMON FUNCTIONS
+analyzer.aggregateSpikes = function(spikes) {
+
+	const aggregatedSpikes = [];
+
+	let prevspike = spikes[spikes.length - 1].perc;
+	let currentspike = 0;
+
+	for (let k = spikes.length - 2; k > -1; k--) {
+		
+		currentspike = spikes[k].perc;
+
+		if (currentspike == 0) //should never happen now..
+			continue;
+
+		if (prevspike*currentspike > 0)
+			prevspike += currentspike;
+		else if (prevspike*currentspike < 0) {
+			aggregatedSpikes.push(prevspike);
+			prevspike = currentspike;
+		}
+
+	}
+
+	aggregatedSpikes.push(prevspike);
+	return aggregatedSpikes;
+}
+
+//this fuction doesn't take spikes structure as input, but just the percentages array
+analyzer.cleanCurve = function(aSpikes) {
+
+	const cleanSpikes = [];
+	cleanSpikes.push(aSpikes[0]);
+
+	for (let k = 1; k < aSpikes.length-1; k++) {
+		let prev = aSpikes[k-1];
+		let next = aSpikes[k+1];
+		let current = aSpikes[k]
+
+		if (current > (prev+next)/4)
+			cleanSpikes.push(current);
+	}
+
+	cleanSpikes.push(aSpikes[aSpikes.length-1]);
+
+	return cleanSpikes;
+}
+
 // *** IMPLEMENTED RANKING ALGORITHMS ***
 
 //V1.4
