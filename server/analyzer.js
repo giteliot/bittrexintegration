@@ -175,6 +175,7 @@ analyzer.getMarketAnalysis = function(market) {
 	analysis.avgDown = downCount > 0 ? downValue/downCount : 0;
 	analysis.avgUp = upCount > 0 ? upValue/upCount : 0;
 	analysis.buyable = analysis.rank >= config.ALERTRANK && analysis.latestSpike < analysis.avgDown;
+	analysis.targetSell = Math.min(analysis.avgUp, Math.abs(analysis.latestSpike));
 
 	return analysis;
 
