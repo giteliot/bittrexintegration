@@ -105,9 +105,9 @@ UpLoop.analyzeMarket = function(pair,price,spikeSize,memorySize, sellables) {
 
 			if (perc < 0) {
 				let analysis = analyzer.getMarketAnalysis(pair);
-				if (analysis.buyable == true && price < analysis.targetBuy) {
+				if (analysis.buyable == true) {
 
-						trader.placeBuy(name, price, analysis.targetSell, function(modified){
+						trader.placeBuy(name, price, price*(1+analysis.avgUp/100), analysis.avgUp,function(modified){
 							if (modified && modified != -1) {
 								console.log(">>> Bought "+name+" for "+price);
 							} else {

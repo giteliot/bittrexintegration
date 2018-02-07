@@ -50,7 +50,7 @@ class HistorySection extends React.Component {
 			<TitleBlock txt = "History"/>
 			<div style={padding}>
 				{_state.transactions.map((tr,i) =>
-					 <TransactionItem key = {i} orderId = {_state.transactions.length-i} time = {tr.date} market = {tr.market} result = {tr.gain}/>
+					 <TransactionItem key = {i} orderId = {_state.transactions.length-i} time = {tr.date} market = {tr.market} result = {tr.gain+" ("+tr.gainPerc+"%)"}/>
 			    )}
 			    </div>
 			</div>

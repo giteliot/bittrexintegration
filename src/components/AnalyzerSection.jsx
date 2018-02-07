@@ -49,13 +49,13 @@ class AnalyzerSection extends React.Component {
 				_this.state.analysis && (
 					<div>
 					<KeyValueBlock txt = "Market: " val = {this.state.pair}/>
-					<KeyValueBlock txt = "Target Buy: " val = {""+this.state.analysis.targetBuy+" ("+this.state.analysis.targetBuyPerc+"%)"}/>
+					<KeyValueBlock txt = "Curve: " val = {"["+this.state.analysis.curve+"]"}/>
+					<KeyValueBlock txt = "Buyable: " val = {""+this.state.analysis.buyable}/>
 					<KeyValueBlock txt = "Alert Rank (switches): " val = {this.state.analysis.rank}/>
-					<KeyValueBlock txt = "Spikes: " val = {this.state.analysis.spikes}/>
-					<KeyValueBlock txt = "Aggregated Spikes: " val = {"L: "+this.state.analysis.latestSpike +" H: "+this.state.analysis.highestUpswing+" D: "+this.state.analysis.highestDownswing}/>
+					<KeyValueBlock txt = "Aggregated Spikes: " val = {"L: "+this.state.analysis.latestSpike +" H: "+this.state.analysis.avgUp+" D: "+this.state.analysis.avgDown}/>
 					</div>
 				)
-				
+
 			}
 			<div style = {padding}>
 			{_state.spikes.map((spike,i) =>

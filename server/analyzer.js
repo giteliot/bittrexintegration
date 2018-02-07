@@ -119,13 +119,21 @@ analyzer.cleanCurve = function(aSpikes) {
 	const cleanSpikes = [];
 	cleanSpikes.push(aSpikes[0]);
 
+	if (aSpikes.length < 2)
+		return cleanSpikes;
+
 	for (let k = 1; k < aSpikes.length-1; k++) {
 		let prev = aSpikes[k-1];
 		let next = aSpikes[k+1];
 		let current = aSpikes[k]
 
-		if (current > (prev+next)/4)
+		if (Math.abs(current) > Math.abs(prev+next)/4)
 			cleanSpikes.push(current);
+		else {
+			cleanSpikes.pop();
+			cleanSpikes.push(prev+next);
+			k++;
+		}
 	}
 
 	cleanSpikes.push(aSpikes[aSpikes.length-1]);
@@ -135,8 +143,44 @@ analyzer.cleanCurve = function(aSpikes) {
 
 // *** IMPLEMENTED RANKING ALGORITHMS ***
 
-//V1.4
+//V1.5
 analyzer.getMarketAnalysis = function(market) {
+
+	const spikes = market.spikes;
+
+	let aSpikes = analyzer.aggregateSpikes(spikes);
+	aSpikes = analyzer.cleanCurve(aSpikes);
+
+	let upCount = 0;
+	let upValue = 0;
+	let downCount = 0;
+	let downValue = 0;
+
+	for (let k = 0; k < aSpikes.length; k++) {
+		let tmpSpike = aSpikes[k];
+		if (tmpSpike > 0) {
+			upCount++;
+			upValue += tmpSpike;
+		} else {
+			downCount++;
+			downValue += tmpSpike;
+		}
+
+	}
+
+	const analysis = {};
+	analysis.rank = aSpikes.length-1;
+	analysis.curve = aSpikes;
+	analysis.latestSpike = aSpikes[aSpikes.length-1];
+	analysis.avgDown = downCount > 0 ? downValue/downCount : 0;
+	analysis.avgUp = upCount > 0 ? upValue/upCount : 0;
+	analysis.buyable = analysis.rank >= config.ALERTRANK && analysis.latestSpike < analysis.avgDown;
+
+	return analysis;
+
+}
+//V1.4
+/*analyzer.getMarketAnalysis = function(market) {
 
 	const spikes = market.spikes;
 
@@ -181,7 +225,7 @@ analyzer.getMarketAnalysis = function(market) {
 	analysis.targetSell = spikes[0].value*(100+Math.floor(-1*analysis.highestDownswing))/100;
 	analysis.buyable = analysis.rank >= config.ALERTRANK;
 	return analysis;
-}
+}*/
 
 //V1.3
 /*analyzer.getMarketAnalysis = function(market) {

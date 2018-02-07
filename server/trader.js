@@ -26,7 +26,7 @@ trader.getSellables = function(callback) {
 	
 }
 
-trader.placeBuy = function(market, price, target, callback) {
+trader.placeBuy = function(market, price, target, targetPerc, callback) {
 
 	const collection = mongoSession.collection('trades');	
 
@@ -34,6 +34,7 @@ trader.placeBuy = function(market, price, target, callback) {
 		"market":market,
 		"price":price,
 		"target": target,
+		"targetPerc": targetPerc.toFixed(2),
 		"date":new Date()
 	})
 	.then(function(r){
@@ -68,6 +69,7 @@ trader.placeSell = function(market, price, callback) {
 				logCollection.insertOne({
 						"market": market,
 						"gain": gain,
+						"gainPerc": ((gain/defBuyAmount)*100).toFixed(2),
 						"date": new Date()
 				})
 				.then(function(r) {
@@ -151,7 +153,7 @@ trader.getGains = function(callback, dateStart, dateEnd) {
 trader.getBuys = function(callback) {
 	const collection = mongoSession.collection('trades');
 
-	collection.find({},{"_id":0,"market":1,"price":1,"date":1, "target":1}).toArray(function(err, docs) {
+	collection.find({},{"_id":0,"market":1,"price":1,"date":1, "target":1, "targetPerc": 1}).toArray(function(err, docs) {
 	    callback(docs);
 	});
 }
@@ -170,7 +172,7 @@ trader.getTransactionHistory = function(callback, dateStart, dateEnd) {
 	if (dateEnd) 
 		query.date.$lt = new Date(dateEnd)
 
-	collection.find(query,{"_id":0,"market":1,"gain":1,"date":1}).toArray(function(err,docs) {
+	collection.find(query,{"_id":0,"market":1,"gain":1,"date":1, "gainPerc": 1}).toArray(function(err,docs) {
 		callback(docs);
 	});
 }
