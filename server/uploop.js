@@ -100,7 +100,7 @@ UpLoop.updateSpikes = function(spikes,price, market) {
         }];
 
         upNeeded = true;
-        console.log("Spikes are empty after cleaning for "+name+". Reinitiating spikes");
+        console.log("Spikes are empty after cleaning for "+market+". Reinitiating spikes");
 
 	} else {
 
