@@ -51,27 +51,29 @@ UpLoop.nextStep = function(pair,price, sellables) {
 			}
 		});
 
-	}
+	} else {
 
-	const perc = spikes[0].perc;
+		const perc = spikes[0].perc;
 
-	if (perc < 0) {
+		if (perc < 0) {
 
-		let analysis = analyzer.getMarketAnalysis(pair);
+			let analysis = analyzer.getMarketAnalysis(pair);
 
-		if (analysis.buyable == true) {
+			if (analysis.buyable == true) {
 
-				trader.placeBuy(name, price, price*(1+analysis.targetSell/100), analysis.targetSell,function(modified){
-					if (modified && modified != -1) {
-						console.log(">>> Bought "+name+" for "+price);
-					} else {
-						console.log("Something went wrong buying "+name);
-					}
-				});
+					trader.placeBuy(name, price, price*(1+analysis.targetSell/100), analysis.targetSell,function(modified){
+						if (modified && modified != -1) {
+							console.log(">>> Bought "+name+" for "+price);
+						} else {
+							console.log("Something went wrong buying "+name);
+						}
+					});
+
+			}
 
 		}
 
-	} 
+	}
 
 }
 
