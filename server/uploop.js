@@ -39,8 +39,14 @@ UpLoop.nextStep = function(pair,price, sellables) {
 
 	const name = pair.pair;
 	let spikes = pair.spikes;
+	const stepPerc = (price/spikes[0].price-1)*100;
 
-	UpLoop.updateSpikes(spikes,price,name);
+	if (Math.abs(stepPerc) > config.MAX_SPIKE) {
+		console.log("!!! Spike way too high for market "+name+"...skipping!!!")
+		return;
+	}
+
+	spikes = UpLoop.updateSpikes(spikes,price,name);
 
 	if ( sellables.indexOf(name) != -1 ) {
 
@@ -59,7 +65,7 @@ UpLoop.nextStep = function(pair,price, sellables) {
 
 			let analysis = analyzer.getMarketAnalysis(pair);
 
-			if (analysis.buyable == true) {
+			if (analysis.buyable == true && stepPerc > config.MIN_SPIKETRADE) {
 
 					trader.placeBuy(name, price, price*(1+analysis.targetSell/100), analysis.targetSell,function(modified){
 						if (modified && modified != -1) {
@@ -94,13 +100,14 @@ UpLoop.updateSpikes = function(spikes,price, market) {
 	}
 
 	if (spikes.length < 1) {
+		
 
 		spikes = [{
             "date": new Date(),
             "perc": 0,
             "value": price
         }];
-
+ 
         upNeeded = true;
         console.log("Spikes are empty after cleaning for "+market+". Reinitiating spikes");
 
@@ -134,6 +141,11 @@ UpLoop.updateSpikes = function(spikes,price, market) {
 
         	console.log('Found switch for market '+market+': '+(perc).toFixed(2)+"%");
 
+        	if (spikes[spikes.length-1].perc == 0) {
+				spikes.pop(); 
+				console.log('Removed placeholder spike for market '+market);
+			}
+
 		}
 
 	}
@@ -144,6 +156,8 @@ UpLoop.updateSpikes = function(spikes,price, market) {
 				console.log("ERROR updating spikes for "+market);
 		});
 	}
+
+	return spikes;
 
 }
 

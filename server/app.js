@@ -18,8 +18,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'build', 'index.html'));
 });
 
-//starting the update loop with SPIKE% spike size and LOOP_INTERVAL seconds interval time
-//UpLoop.update(config.SPIKE);
 UpLoop.start();
 
 module.exports = app;

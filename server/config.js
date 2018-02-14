@@ -4,14 +4,27 @@ const config = {};
 config.db = {};
 config.db.url = 'mongodb://localhost:27017/brexdb';
 
-//constants
+//parameters
+
+//Loop Settings
 config.LOOP_INTERVAL = 30; //interval in seconds
-config.SPIKE = 5; //percentage of a valid spike
 config.MEMORY = 24; //hours of history
-config.ALERTRANK = 2; //if there is a low for a market with rank >= ALERTRANK, an alert is sent
+
+//Spikes Settings
+config.MAX_SPIKE = 10; //max spike size recordable; lower sizes are considered not valid
 config.MIN_CHANGE = 5; //mimum value of a spike to be considered a switch
-config.BUY_AM_BTC = 0.01; //amount of BTC worth of Currency bought in each transaction
-config.BUY_AM_ETH = 0.1; //amount of ETH worth of Currency bought in each transaction
-config.FEES = 0.0025; //fees % (simulation only)
+
+//Analysis Settings
+config.MIN_SPIKETRADE = 1; //rebound size to consider a trade
+config.ALERTRANK = 4; //minimum switches for a market to be tradable
+
+//Buy Amount
+config.BUY_AM_BTC = 0.01;
+config.BUY_AM_ETH = 0.1; 
+
+config.FEES = 0.0025; //simulation only
+
+//Obsolete
+config.SPIKE = 5; //percentage of a valid spike (obsolete)
 
 module.exports = config;
