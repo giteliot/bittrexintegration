@@ -39,7 +39,7 @@ UpLoop.nextStep = function(pair,price, sellables) {
 
 	const name = pair.pair;
 	let spikes = pair.spikes;
-	const stepPerc = (price/spikes[0].price-1)*100;
+	const stepPerc = (price/spikes[0].value-1)*100;
 
 	if (Math.abs(stepPerc) > config.MAX_SPIKE) {
 		console.log("!!! Spike way too high for market "+name+"...skipping!!!")
