@@ -9,6 +9,7 @@ config.db.url = 'mongodb://localhost:27017/brexdb';
 //Loop Settings
 config.LOOP_INTERVAL = 30; //interval in seconds
 config.MEMORY = 24; //hours of history
+config.VALIDSPIKE_MEM = 4;
 
 //Spikes Settings
 config.MAX_SPIKE = 10; //max spike size recordable; lower sizes are considered not valid

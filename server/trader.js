@@ -56,8 +56,10 @@ trader.placeSell = function(market, price, callback) {
 			let defBuyAmount = baseCurrency == "BTC" ? config.BUY_AM_BTC : config.BUY_AM_ETH;
 			let gain = trader.getGainz(defBuyAmount,priceOld,price,config.FEES);
 			const now = new Date();
-			
-			if (price > doc.target || ( (now.getTime()-doc.date.getTime()) > 1000*3600*config.MEMORY) && gain > 0) {			
+			const dt = (now.getTime()-doc.date.getTime())/(1000*3600);
+			const targetSellUpd = priceOld*(1+doc.targetPerc/(100*(1+Math.trunc(dt))));
+
+			if (price > targetSellUpd || ( dt > config.VALIDSPIKE_MEM && gain > 0 ) || ( dt > config.MEMORY ) ) {			
 
 				collection.deleteOne({"market":market,"price":priceOld})
 				.then(function(r){

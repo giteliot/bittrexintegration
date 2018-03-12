@@ -86,6 +86,35 @@ analyzer.getPairData = function(pair, callback) {
 }
 
 //COMMON FUNCTIONS
+analyzer.deleteIsolatedSpikes = function(spikes) {
+
+	let aggregatedSpikes = [];
+
+	let prevspike = spikes[spikes.length - 1];
+	let currentspike = 0;
+
+	for (let k = spikes.length - 2; k > -1; k--) {
+		
+		currentspike = spikes[k];
+
+		if (prevspike.perc == 0) //should never happen now..
+			continue;
+		console.log((currentspike.date.getTime()-prevspike.date.getTime()));
+		if ((currentspike.date.getTime()-prevspike.date.getTime()) < 1000*60*60*config.VALIDSPIKE_MEM ) 
+			aggregatedSpikes = [prevspike.perc];
+
+		prevspike = spikes[k];
+
+	}
+
+	if (spikes.length > 1 && (prevspike.date.getTime()-spikes[1].date.getTime()) < 1000*60*60*4)
+		aggregatedSpikes.push(prevspike.perc);
+	else
+		aggregatedSpikes = [prevspike.perc];
+		
+	return aggregatedSpikes;
+}
+
 analyzer.aggregateSpikes = function(spikes) {
 
 	const aggregatedSpikes = [];
@@ -142,9 +171,46 @@ analyzer.cleanCurve = function(aSpikes) {
 }
 
 // *** IMPLEMENTED RANKING ALGORITHMS ***
+//V1.6
+analyzer.getMarketAnalysis = function(market) {
+
+	const spikes = market.spikes;
+
+	let aSpikes = analyzer.deleteIsolatedSpikes(spikes);
+
+	let upCount = 0;
+	let upValue = 0;
+	let downCount = 0;
+	let downValue = 0;
+
+	for (let k = 0; k < aSpikes.length; k++) {
+		let tmpSpike = aSpikes[k];
+		if (tmpSpike > 0) {
+			upCount++;
+			upValue += tmpSpike;
+		} else {
+			downCount++;
+			downValue += tmpSpike;
+		}
+
+	}
+
+	const analysis = {};
+	analysis.rank = aSpikes.length-1;
+	analysis.curve = aSpikes;
+	analysis.latestSpike = aSpikes[aSpikes.length-1];
+	analysis.avgDown = downCount > 0 ? downValue/downCount : 0;
+	analysis.avgUp = upCount > 0 ? upValue/upCount : 0;
+	analysis.buyable = analysis.rank >= config.ALERTRANK && analysis.latestSpike < analysis.avgDown;
+	analysis.targetSell = Math.min(analysis.avgUp, Math.abs(analysis.latestSpike));
+
+	return analysis;
+
+}
+
 
 //V1.5
-analyzer.getMarketAnalysis = function(market) {
+/*analyzer.getMarketAnalysis = function(market) {
 
 	const spikes = market.spikes;
 
@@ -179,7 +245,9 @@ analyzer.getMarketAnalysis = function(market) {
 
 	return analysis;
 
-}
+}*/
+
+
 //V1.4
 /*analyzer.getMarketAnalysis = function(market) {
 

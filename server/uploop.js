@@ -48,7 +48,7 @@ UpLoop.nextStep = function(pair,price, sellables) {
 
 	spikes = UpLoop.updateSpikes(spikes,price,name);
 
-	if ( sellables.indexOf(name) != -1 ) {
+	if ( sellables.indexOf(name) != -1 && stepPerc < -1*config.MIN_SPIKETRADE ) {
 
 		trader.placeSell(name, price, function(modified){
 			if (modified && modified != -1) {
