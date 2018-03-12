@@ -99,7 +99,7 @@ analyzer.deleteIsolatedSpikes = function(spikes) {
 
 		if (prevspike.perc == 0) //should never happen now..
 			continue;
-		console.log((currentspike.date.getTime()-prevspike.date.getTime()));
+		//console.log((currentspike.date.getTime()-prevspike.date.getTime()));
 		if ((currentspike.date.getTime()-prevspike.date.getTime()) < 1000*60*60*config.VALIDSPIKE_MEM ) 
 			aggregatedSpikes = [prevspike.perc];
 
