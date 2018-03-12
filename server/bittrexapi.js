@@ -22,7 +22,7 @@ bittrexapi.getInitPair = function(pair, callback) {
 	  	return;
 	 }
 	 
-	 spike.value = data.result.Last;
+	 spike.value = (data.result.Bid+data.result.Ask)/2;
 	 initPair.spikes.push(spike);
 	 callback(initPair);
 	 return;
@@ -37,7 +37,7 @@ bittrexapi.getLatestPrices = function(callback) {
 		if (data && data.result) {
 			const prices = {};
 			data.result.forEach(function(summary){
-				prices[summary.MarketName] = summary.Last;
+				prices[summary.MarketName] = (summary.Bid+summary.Ask)/2;
 			});
 			callback(prices);
 		  	return;
@@ -53,8 +53,8 @@ bittrexapi.getLatestPrices = function(callback) {
 //get latest price for a specific market
 bittrexapi.getLatestPrice = function(pair, callback) {
 	bittrex.getticker( { market : pair }, function( data, err ) {
-		if (data && data.result && data.result.Last) {
-			callback(data.result.Last);
+		if (data && data.result && data.result.Bid && data.result.Ask) {
+			callback((data.result.Bid+data.result.Ask)/2);
 		  	return;
 		}
 
