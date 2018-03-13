@@ -49,14 +49,15 @@ UpLoop.nextStep = function(pair,price, sellables) {
 
 	spikes = UpLoop.updateSpikes(spikes,price,name);
 
-	if ( sellables.indexOf(name) != -1 && stepPerc < -1*config.MIN_SPIKETRADE ) {
+	if ( sellables.indexOf(name) != -1 && ) {
 
-		trader.placeSell(name, price, function(modified){
-			if (modified && modified != -1) {
-			} else {
-				console.log("Something went wrong selling "+name);
-			}
-		});
+		if ( stepPerc < -1*config.MIN_SPIKETRADE )
+			trader.placeSell(name, price, function(modified){
+				if (modified && modified != -1) {
+				} else {
+					console.log("Something went wrong selling "+name);
+				}
+			});
 
 	} else {
 
