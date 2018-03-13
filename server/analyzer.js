@@ -101,7 +101,7 @@ analyzer.deleteIsolatedSpikes = function(spikes) {
 			continue;
 		//console.log((currentspike.date.getTime()-prevspike.date.getTime()));
 		if ((currentspike.date.getTime()-prevspike.date.getTime()) < 1000*60*60*config.VALIDSPIKE_MEM ) 
-			aggregatedSpikes = [prevspike.perc];
+			aggregatedSpikes.push(prevspike.perc);
 
 		prevspike = spikes[k];
 
@@ -196,7 +196,7 @@ analyzer.getMarketAnalysis = function(market) {
 	}
 
 	const analysis = {};
-	analysis.rank = aSpikes.length-1;
+	analysis.rank = aSpikes.length;
 	analysis.curve = aSpikes;
 	analysis.latestSpike = aSpikes[aSpikes.length-1];
 	analysis.avgDown = downCount > 0 ? downValue/downCount : 0;
