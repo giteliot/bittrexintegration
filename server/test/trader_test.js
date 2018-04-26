@@ -1,4 +1,4 @@
-const expect    = require("chai").expect;
+const expect = require("chai").expect;
 const trader = require("../trader.js");
 
 describe("Trader", function() {

@@ -87,7 +87,6 @@ analyzer.getPairData = function(pair, callback) {
 
 //COMMON FUNCTIONS
 analyzer.deleteIsolatedSpikes = function(spikes) {
-
 	let aggregatedSpikes = [];
 
 	let prevspike = spikes[spikes.length - 1];
@@ -99,9 +98,12 @@ analyzer.deleteIsolatedSpikes = function(spikes) {
 
 		if (prevspike.perc == 0) //should never happen now..
 			continue;
+
 		//console.log((currentspike.date.getTime()-prevspike.date.getTime()));
 		if ((currentspike.date.getTime()-prevspike.date.getTime()) < 1000*60*60*config.VALIDSPIKE_MEM ) 
 			aggregatedSpikes.push(prevspike.perc);
+		else 
+			aggregatedSpikes = [];
 
 		prevspike = spikes[k];
 
@@ -111,7 +113,6 @@ analyzer.deleteIsolatedSpikes = function(spikes) {
 		aggregatedSpikes.push(prevspike.perc);
 	else
 		aggregatedSpikes = [prevspike.perc];
-		
 	return aggregatedSpikes;
 }
 
