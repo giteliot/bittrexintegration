@@ -152,7 +152,7 @@ analyzer.cleanCurve = function(aSpikes) {
 	if (aSpikes.length < 2)
 		return cleanSpikes;
 
-	for (let k = 1; k < aSpikes.length-1; k++) {
+	for (var k = 1; k < aSpikes.length-1; k++) {
 		let prev = aSpikes[k-1];
 		let next = aSpikes[k+1];
 		let current = aSpikes[k]
@@ -166,7 +166,8 @@ analyzer.cleanCurve = function(aSpikes) {
 		}
 	}
 
-	cleanSpikes.push(aSpikes[aSpikes.length-1]);
+	if (k < aSpikes.length)
+		cleanSpikes.push(aSpikes[aSpikes.length-1]);
 
 	return cleanSpikes;
 }
@@ -177,7 +178,7 @@ analyzer.getMarketAnalysis = function(market) {
 
 	const spikes = market.spikes;
 
-	let aSpikes = analyzer.deleteIsolatedSpikes(spikes);
+	let aSpikes = analyzer.cleanCurve(analyzer.deleteIsolatedSpikes(spikes));
 
 	let upCount = 0;
 	let upValue = 0;
